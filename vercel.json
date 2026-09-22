@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/", "dest": "/Index.dc.html" },
+    { "src": "/index", "dest": "/Index.dc.html" },
+    { "src": "/brand-reference", "dest": "/Brand%20Reference.dc.html" },
+    { "src": "/jungic", "dest": "/Jungic%20Home.dc.html" },
+    { "src": "/heliocene", "dest": "/Heliocene%20Home.dc.html" },
+    { "src": "/patria", "dest": "/Patria%20Home.dc.html" },
+    { "src": "/homepage", "dest": "/Homepage.dc.html" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "status": 302, "headers": { "Location": "/" } }
+  ]
+}

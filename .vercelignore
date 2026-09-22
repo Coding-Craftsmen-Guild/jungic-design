@@ -1,0 +1,7 @@
+# Canvas editor artifact — not part of the site.
+.thumbnail
+
+# Commercial documents live outside this repo. Kept here as a guard in case
+# one is ever copied in: Vercel deployment URLs are public by default.
+ponuda.pdf
+ponuda.md

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Archivo:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { -webkit-font-smoothing: antialiased; }
+    a { color: inherit; } a:hover { color: inherit; }
+    input, textarea, select, button { font: inherit; }
+  </style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="position: relative; background: {{ t.bg }}; color: {{ t.ink }}; font-family: {{ t.body }};">
+
+
+  <!-- HEADER -->
+  <header style="position: sticky; top: 0; z-index: 50; background: {{ t.headerBg }}; color: {{ t.headerFg }}; border-bottom: 1px solid {{ t.headerLine }}; box-shadow: {{ hdr.shadow }}; transition: box-shadow .35s ease;">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 0 40px; height: {{ hdr.h }}; transition: height .35s ease; display: flex; align-items: stretch; gap: clamp(20px, 3vw, 40px);">
+      <a href="#top" style="align-self: center; display: block; width: {{ c.logo.w }}px; height: {{ c.logo.h }}px; overflow: hidden; position: relative; flex-shrink: 0;">
+        <img src="{{ c.logo.src }}" alt="{{ c.name }}" style="position: absolute; width: {{ c.logo.imgW }}px; left: {{ c.logo.left }}px; top: {{ c.logo.top }}px;">
+      </a>
+      <div style="width: 1px; background: {{ t.headerLine }}; margin: 26px 0; flex-shrink: 0; display: {{ navDisplay }};"></div>
+      <div style="flex: 1; display: {{ menuBtnDisplay }};"></div>
+      <nav style="display: {{ navDisplay }}; gap: clamp(18px, 2.2vw, 32px); align-items: stretch; flex: 1; min-width: 0;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+          <a href="{{ n.href }}" style="display: flex; align-items: center; white-space: nowrap; font-size: 14px; font-weight: 500; letter-spacing: 0.2px; color: {{ n.color }}; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 8px; text-decoration-color: {{ n.deco }}; transition: color .25s ease, text-decoration-color .25s ease;" style-hover="color: {{ t.headerFg }}; text-decoration-color: {{ t.headerFg }};">{{ n.label }}</a>
+        </sc-for>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 16px; flex-shrink: 0;">
+        <div style="position: relative;">
+          <button onClick="{{ toggleLang }}" aria-label="Jezik" style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; background: transparent; border: 1px solid {{ t.headerLine }}; border-radius: 6px; color: {{ t.headerFg }}; font-size: 14px; font-weight: 500; cursor: pointer; transition: border-color .25s ease;" style-hover="border-color: {{ t.headerMuted }};"><img src="{{ lang.flag }}" alt="" style="width: 22px; height: 15px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.12);"><span>{{ lang.code }}</span><span style="width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY({{ langChevY }}) rotate({{ langRot }}); transition: transform .3s ease; margin-left: 2px;"></span></button>
+          <sc-if value="{{ langOpen }}">
+            <div style="position: absolute; right: 0; top: 52px; min-width: 200px; background: #FFFFFF; color: #1E1E1E; border-radius: 6px; box-shadow: 0 20px 44px -14px rgba(0,0,0,.35); padding: 6px; display: flex; flex-direction: column; gap: 2px;">
+              <sc-for list="{{ langs }}" as="l" hint-placeholder-count="3">
+                <button onClick="{{ l.pick }}" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border: none; border-radius: 4px; background: {{ l.bg }}; color: #1E1E1E; font-size: 14px; font-weight: {{ l.weight }}; text-align: left; cursor: pointer;" style-hover="background: #F2F1EE;"><img src="{{ l.flag }}" alt="" style="width: 22px; height: 15px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.12);"><span style="flex: 1;">{{ l.name }}</span><span style="font-size: 12px; color: #8A8883; letter-spacing: 1px;">{{ l.code }}</span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <a href="#kontakt" style="{{ btn.headerCta.style }}" style-hover="{{ btn.headerCta.hover }}">{{ c.headerCta }}</a>
+        <button onClick="{{ toggleMenu }}" aria-label="Meni" style="display: {{ menuBtnDisplay }}; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 6px; border: 1px solid {{ t.headerLine }}; background: transparent; color: {{ t.headerFg }}; font-size: 18px; cursor: pointer;">{{ menuIcon }}</button>
+      </div>
+    </div>
+    <sc-if value="{{ menuOpen }}">
+      <nav style="position: absolute; left: 0; right: 0; top: 100%; background: {{ t.headerBg }}; border-bottom: 1px solid {{ t.headerLine }}; box-shadow: 0 24px 40px -24px rgba(0,0,0,.4); padding: 12px 40px 28px; display: flex; flex-direction: column;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+          <a href="{{ n.href }}" onClick="{{ closeMenu }}" style="padding: 16px 0; border-bottom: 1px solid {{ t.headerLine }}; text-decoration: none; font-size: 14px; font-weight: 500; letter-spacing: 1.6px; text-transform: uppercase; color: {{ n.color }};" style-hover="color: {{ t.headerFg }};">{{ n.label }}</a>
+        </sc-for>
+      </nav>
+    </sc-if>
+  </header>
+
+  <!-- HERO -->
+  <section id="top" data-screen-label="Hero" style="position: relative; height: 88vh; min-height: 620px; max-height: 900px; overflow: hidden; background: {{ t.dark }}; color: #FFFFFF;">
+    <sc-if value="{{ c.hero.video }}">
+      <video data-hero="" src="{{ c.hero.video }}" autoplay="" muted="" loop="" playsinline="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+    </sc-if>
+    <sc-if value="{{ c.hero.image }}"><img data-hero="" src="{{ c.hero.image }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></sc-if>
+    <sc-if value="{{ c.hero.ph }}">
+      <div data-hero="" style="position: absolute; inset: 0; background: repeating-linear-gradient(135deg, {{ t.dark }} 0 14px, {{ t.darker }} 14px 28px); display: flex; align-items: flex-start; justify-content: flex-end; padding: 140px 56px;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; color: {{ t.onDarkMuted }};">{{ c.hero.label }}</span>
+      </div>
+    </sc-if>
+    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, {{ t.heroShade }} 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.2) 100%);"></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 55%);"></div>
+    <div style="position: relative; z-index: 6; height: 100%; max-width: 1360px; margin: 0 auto; padding: 0 40px 96px; display: flex; flex-direction: column; justify-content: flex-end;">
+      <div style="max-width: 760px; display: flex; flex-direction: column; gap: 24px; padding-left: 28px; border-left: 2px solid {{ t.accent }};">
+        <div style="font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: {{ t.accent }};">{{ c.hero.pretitle }}</div>
+        <h1 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: clamp(40px, 5.4vw, 76px); line-height: 1.04; text-wrap: balance; text-shadow: 0 2px 24px rgba(0,0,0,0.35);">{{ c.hero.title }}</h1>
+        <p style="font-size: 18px; line-height: 1.6; max-width: 600px; color: rgba(255,255,255,0.92); text-wrap: pretty; text-shadow: 0 1px 12px rgba(0,0,0,0.4);">{{ c.hero.text }}</p>
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; padding-top: 8px;">
+          <a href="#o-nama" style="{{ btn.darkPrimary.style }}" style-hover="{{ btn.darkPrimary.hover }}">{{ c.hero.cta1 }}</a>
+          <a href="#kontakt" style="{{ btn.darkOutline.style }}" style-hover="{{ btn.darkOutline.hover }}">{{ c.hero.cta2 }}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEXT + IMAGE (1) -->
+  <section id="o-nama" data-screen-label="Text with image" style="background: {{ t.bg }};">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 128px 40px; display: flex; flex-wrap: wrap; gap: 72px; align-items: center; flex-direction: {{ ti1.dir }};">
+      <div data-reveal="" style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 22px; padding-left: 28px; border-left: 1px solid {{ t.line }}; position: relative;">
+        <div data-rail="" style="position: absolute; left: -1px; top: 0; width: 2px; height: 56px; background: {{ t.accentOnLight }}; will-change: transform;"></div>
+        <div style="font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: {{ t.pretitle }};">{{ c.about.pretitle }}</div>
+        <h2 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.1; text-wrap: balance;">{{ c.about.title }}</h2>
+        <sc-for list="{{ c.about.text }}" as="p" hint-placeholder-count="2">
+          <p style="font-size: 17px; line-height: 1.7; color: {{ t.muted }}; text-wrap: pretty;">{{ p }}</p>
+        </sc-for>
+        <div style="padding-top: 10px;"><a href="#kontakt" style="{{ btn.primary.style }}" style-hover="{{ btn.primary.hover }}">{{ c.about.cta }}</a></div>
+      </div>
+      <div data-reveal="" style="flex: 1 1 480px; position: relative; aspect-ratio: 5 / 4; border-radius: 6px; overflow: hidden; background: {{ t.soft }};">
+        <sc-if value="{{ c.about.image.src }}"><img data-parallax="" src="{{ c.about.image.src }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;"></sc-if>
+        <sc-if value="{{ c.about.image.ph }}"><div style="position: absolute; inset: 0; background: repeating-linear-gradient(135deg, {{ t.soft }} 0 10px, {{ t.softAlt }} 10px 20px); display: flex; align-items: center; justify-content: center;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{ t.muted }};">{{ c.about.image.label }}</span></div></sc-if>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES / CARDS -->
+  <section id="usluge" data-screen-label="Cards" style="background: {{ t.soft }};">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 128px 40px; display: flex; flex-direction: column; gap: 56px;">
+      <div style="display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; align-items: flex-end;">
+        <div data-reveal="" style="display: flex; flex-direction: column; gap: 18px; max-width: 640px;">
+          <div style="font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: {{ t.pretitle }};">{{ c.cards.pretitle }}</div>
+          <h2 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.1;">{{ c.cards.title }}</h2>
+        </div>
+        <a href="#usluge" style="{{ btn.outline.style }}" style-hover="{{ btn.outline.hover }}">{{ c.cards.cta }}</a>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+        <sc-for list="{{ c.cards.items }}" as="s" hint-placeholder-count="6">
+          <a data-reveal="" href="#usluge" style="display: flex; flex-direction: column; background: {{ t.bg }}; border: 1px solid {{ t.line }}; border-radius: 6px; overflow: hidden; text-decoration: none; transition: all .3s ease;" style-hover="transform: translateY(-4px); box-shadow: 0 22px 40px -24px rgba(0,0,0,.35); border-color: {{ t.accentOnLight }};">
+            <div style="position: relative; aspect-ratio: 4 / 3; min-height: 0; overflow: hidden; flex-shrink: 0; background: {{ t.softAlt }};">
+              <sc-if value="{{ s.src }}"><img src="{{ s.src }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;"></sc-if>
+              <sc-if value="{{ s.ph }}"><div style="position: absolute; inset: 0; background: repeating-linear-gradient(135deg, {{ t.soft }} 0 10px, {{ t.softAlt }} 10px 20px); display: flex; align-items: center; justify-content: center;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{ t.muted }};">{{ s.label }}</span></div></sc-if>
+              <div style="position: absolute; top: 16px; left: 16px; background: {{ t.bg }}; color: {{ t.ink }}; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 7px 12px; border-radius: 4px;">{{ s.tag }}</div>
+            </div>
+            <div style="padding: 28px; display: flex; flex-direction: column; gap: 12px; flex: 1;">
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{ t.muted }};">{{ s.meta }}</div>
+              <h3 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: 24px; line-height: 1.2;">{{ s.title }}</h3>
+              <p style="font-size: 15px; line-height: 1.65; color: {{ t.muted }}; flex: 1;">{{ s.text }}</p>
+              <div style="font-size: 15px; font-weight: 600; color: {{ t.ink }}; padding-top: 8px;">{{ c.cards.more }} →</div>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEXT + IMAGE (2) -->
+  <section data-screen-label="Text with image 2" style="background: {{ t.bg }};">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 128px 40px; display: flex; flex-wrap: wrap; gap: 72px; align-items: center; flex-direction: {{ ti2.dir }};">
+      <div data-reveal="" style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 22px; padding-left: 28px; border-left: 1px solid {{ t.line }}; position: relative;">
+        <div data-rail="" style="position: absolute; left: -1px; top: 0; width: 2px; height: 56px; background: {{ t.accentOnLight }}; will-change: transform;"></div>
+        <div style="font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: {{ t.pretitle }};">{{ c.second.pretitle }}</div>
+        <h2 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.1; text-wrap: balance;">{{ c.second.title }}</h2>
+        <sc-for list="{{ c.second.text }}" as="p" hint-placeholder-count="2">
+          <p style="font-size: 17px; line-height: 1.7; color: {{ t.muted }}; text-wrap: pretty;">{{ p }}</p>
+        </sc-for>
+        <div style="padding-top: 10px;"><a href="#kontakt" style="{{ btn.secondary.style }}" style-hover="{{ btn.secondary.hover }}">{{ c.second.cta }}</a></div>
+      </div>
+      <div data-reveal="" style="flex: 1 1 480px; position: relative; aspect-ratio: 5 / 4; border-radius: 6px; overflow: hidden; background: {{ t.soft }};">
+        <sc-if value="{{ c.second.image.src }}"><img data-parallax="" src="{{ c.second.image.src }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;"></sc-if>
+        <sc-if value="{{ c.second.image.ph }}"><div style="position: absolute; inset: 0; background: repeating-linear-gradient(135deg, {{ t.soft }} 0 10px, {{ t.softAlt }} 10px 20px); display: flex; align-items: center; justify-content: center;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{ t.muted }};">{{ c.second.image.label }}</span></div></sc-if>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="galerija" data-screen-label="Gallery" style="background: {{ t.dark }}; color: {{ t.onDark }};">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 128px 40px 48px; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; align-items: flex-end;">
+      <div data-reveal="" style="display: flex; flex-direction: column; gap: 18px; max-width: 640px;">
+        <div style="font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: {{ t.accent }};">{{ c.gallery.pretitle }}</div>
+        <h2 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.1;">{{ c.gallery.title }}</h2>
+        <p style="font-size: 17px; line-height: 1.7; color: {{ t.onDarkMuted }};">{{ c.gallery.text }}</p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{ t.onDarkMuted }}; padding-right: 12px;">{{ galleryCount }}</div>
+        <button onClick="{{ galPrev }}" aria-label="Prethodno" style="width: 48px; height: 48px; border-radius: 6px; border: 2px solid {{ t.onDarkLine }}; background: transparent; color: {{ t.onDark }}; font-size: 20px; cursor: pointer; transition: all .25s ease;" style-hover="background: {{ t.accent }}; border-color: {{ t.accent }}; color: {{ t.onAccent }};">←</button>
+        <button onClick="{{ galNext }}" aria-label="Sledeće" style="width: 48px; height: 48px; border-radius: 6px; border: 2px solid {{ t.onDarkLine }}; background: transparent; color: {{ t.onDark }}; font-size: 20px; cursor: pointer; transition: all .25s ease;" style-hover="background: {{ t.accent }}; border-color: {{ t.accent }}; color: {{ t.onAccent }};">→</button>
+      </div>
+    </div>
+    <div ref="{{ trackRef }}" onScroll="{{ onTrackScroll }}" style="display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 0 max(40px, calc((100% - 1280px) / 2)) 128px; scroll-padding: 0 max(40px, calc((100% - 1280px) / 2));">
+      <sc-for list="{{ gallery }}" as="g" hint-placeholder-count="4">
+        <button data-reveal="" onClick="{{ g.open }}" style="flex: 0 0 min(760px, 82vw); aspect-ratio: 16 / 10; scroll-snap-align: start; position: relative; border: none; padding: 0; border-radius: 6px; overflow: hidden; cursor: zoom-in; background: {{ t.darker }}; transition: opacity .3s ease;" style-hover="opacity: 0.88;">
+          <sc-if value="{{ g.src }}"><img src="{{ g.src }}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;"></sc-if>
+          <sc-if value="{{ g.ph }}"><div style="position: absolute; inset: 0; background: repeating-linear-gradient(135deg, {{ t.darker }} 0 12px, {{ t.dark }} 12px 24px); display: flex; align-items: center; justify-content: center;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{ t.onDarkMuted }};">{{ g.label }}</span></div></sc-if>
+          <div style="position: absolute; right: 16px; bottom: 16px; width: 40px; height: 40px; border-radius: 6px; background: rgba(0,0,0,0.55); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 18px;">⤢</div>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" data-screen-label="FAQ" style="background: {{ t.bg }};">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 128px 40px; display: flex; flex-wrap: wrap; gap: 72px; align-items: flex-start;">
+      <div data-reveal="" style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 18px; position: sticky; top: 120px; padding-left: 28px; border-left: 1px solid {{ t.line }};">
+        <div style="font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: {{ t.pretitle }};">FAQ</div>
+        <h2 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.1;">Često postavljana pitanja</h2>
+        <p style="font-size: 17px; line-height: 1.7; color: {{ t.muted }};">{{ c.faqIntro }}</p>
+        <div style="padding-top: 8px;"><a href="#kontakt" style="{{ btn.outline.style }}" style-hover="{{ btn.outline.hover }}">Postavite pitanje</a></div>
+      </div>
+      <div style="flex: 2 1 560px; display: flex; flex-direction: column; border-top: 1px solid {{ t.line }};">
+        <sc-for list="{{ faq }}" as="f" hint-placeholder-count="5">
+          <div data-reveal="" style="border-bottom: 1px solid {{ t.line }};">
+            <button onClick="{{ f.toggle }}" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 0; background: none; border: none; cursor: pointer; text-align: left; color: {{ t.ink }};">
+              <span style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; font-size: 21px; line-height: 1.35;">{{ f.q }}</span>
+              <span style="flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; border: 1px solid {{ f.iconBorder }}; background: {{ f.iconBg }}; color: {{ f.iconFg }}; display: flex; align-items: center; justify-content: center; transition: background .35s ease, border-color .35s ease, color .35s ease;"><span style="width: 9px; height: 9px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY({{ f.chevY }}) rotate({{ f.rot }}); transition: transform .45s cubic-bezier(.2,.7,.2,1);"></span></span>
+            </button>
+            <div style="display: grid; grid-template-rows: {{ f.rows }}; transition: grid-template-rows .5s cubic-bezier(.2,.7,.2,1);">
+              <div style="overflow: hidden; min-height: 0;">
+                <p style="font-size: 16px; line-height: 1.75; color: {{ t.muted }}; padding: 0 64px 30px 0; text-wrap: pretty; opacity: {{ f.op }}; transform: translateY({{ f.ty }}); transition: opacity .45s ease, transform .5s cubic-bezier(.2,.7,.2,1);">{{ f.a }}</p>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT + MAP -->
+  <section id="kontakt" data-screen-label="Contact" style="background: {{ t.soft }};">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 128px 40px; display: flex; flex-direction: column; gap: 48px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 64px; align-items: stretch;">
+        <div data-reveal="" style="display: flex; flex-direction: column; gap: 22px; padding-left: 28px; border-left: 1px solid {{ t.line }}; position: relative;">
+          <div data-rail="" style="position: absolute; left: -1px; top: 0; width: 2px; height: 56px; background: {{ t.accentOnLight }}; will-change: transform;"></div>
+          <div style="font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: {{ t.pretitle }};">Kontakt</div>
+          <h2 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.1;">Stupite u kontakt s nama.</h2>
+          <p style="font-size: 17px; line-height: 1.7; color: {{ t.muted }}; max-width: 520px; text-wrap: pretty;">{{ contactText }}</p>
+          <div style="display: flex; flex-direction: column; border-top: 1px solid {{ t.line }}; margin-top: 8px;">
+            <div style="display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px; line-height: 1.5;"><div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: {{ t.pretitle }}; padding-top: 3px;">Adresa</div><div style="color: {{ t.ink }};"><sc-for list="{{ c.contact.addresses }}" as="ad" hint-placeholder-count="1"><div>{{ ad }}</div></sc-for></div></div>
+            <div style="display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px; line-height: 1.5;"><div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: {{ t.pretitle }}; padding-top: 3px;">Telefon</div><div style="color: {{ t.ink }};">{{ c.contact.phone }}</div></div>
+            <div style="display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px; line-height: 1.5;"><div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: {{ t.pretitle }}; padding-top: 3px;">E-mail</div><div style="color: {{ t.ink }};">{{ c.contact.email }}</div></div>
+            <div style="display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px; line-height: 1.5;"><div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: {{ t.pretitle }}; padding-top: 3px;">Radno vreme</div><div style="color: {{ t.ink }};">Pon – Pet, 08:00 – 16:00</div></div>
+          </div>
+        </div>
+        <div data-reveal="" style="position: relative; min-height: 520px; border-radius: 6px; overflow: hidden; border: 1px solid {{ t.line }}; background: {{ t.softAlt }};">
+          <iframe src="{{ mapSrc }}" title="Mapa" loading="lazy" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"></iframe>
+        </div>
+      </div>
+      <form data-reveal="" onSubmit="{{ onSubmit }}" style="background: {{ t.bg }}; border: 1px solid {{ t.line }}; border-radius: 6px; padding: 48px; display: flex; flex-direction: column; gap: 24px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px;">
+          <h3 style="font-family: {{ t.heading }}; font-weight: {{ t.headingWeight }}; letter-spacing: {{ t.headingTracking }}; font-size: 28px;">Pošaljite upit</h3>
+          <span style="font-size: 14px; color: {{ t.muted }};">Odgovaramo u roku od jednog radnog dana.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 500; color: {{ t.muted }};">Ime i prezime *<input required="" style="height: 48px; padding: 0 16px; border: 1px solid {{ t.line }}; border-radius: 6px; background: {{ t.bg }}; color: {{ t.ink }}; font-size: 16px; outline: none; transition: border-color .25s ease;" style-focus="border-color: {{ t.ink }};"></label>
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 500; color: {{ t.muted }};">E-mail *<input type="email" required="" style="height: 48px; padding: 0 16px; border: 1px solid {{ t.line }}; border-radius: 6px; background: {{ t.bg }}; color: {{ t.ink }}; font-size: 16px; outline: none; transition: border-color .25s ease;" style-focus="border-color: {{ t.ink }};"></label>
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 500; color: {{ t.muted }};">Telefon<input style="height: 48px; padding: 0 16px; border: 1px solid {{ t.line }}; border-radius: 6px; background: {{ t.bg }}; color: {{ t.ink }}; font-size: 16px; outline: none; transition: border-color .25s ease;" style-focus="border-color: {{ t.ink }};"></label>
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 500; color: {{ t.muted }};">Tema *
+            <select style="height: 48px; padding: 0 12px; border: 1px solid {{ t.line }}; border-radius: 6px; background: {{ t.bg }}; color: {{ t.ink }}; font-size: 16px; outline: none; transition: border-color .25s ease;">
+              <sc-for list="{{ c.topics }}" as="o" hint-placeholder-count="3"><option>{{ o }}</option></sc-for>
+            </select>
+          </label>
+        </div>
+        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 500; color: {{ t.muted }};">Poruka *<textarea required="" rows="5" style="padding: 14px 16px; border: 1px solid {{ t.line }}; border-radius: 6px; background: {{ t.bg }}; color: {{ t.ink }}; font-size: 16px; resize: vertical; outline: none;" style-focus="border-color: {{ t.ink }};"></textarea></label>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+          <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: {{ t.muted }};"><input type="checkbox" required="" style="width: 18px; height: 18px; accent-color: {{ t.primary }};">Slažem se sa politikom privatnosti.</label>
+          <div style="display: flex; align-items: center; gap: 20px;">
+            <sc-if value="{{ sent }}"><span style="font-size: 15px; color: {{ t.ink }};">Hvala! Javićemo vam se uskoro.</span></sc-if>
+            <button type="submit" style="{{ btn.primary.style }}" style-hover="{{ btn.primary.hover }}">Pošaljite poruku</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background: {{ t.dark }}; color: {{ t.onDarkMuted }}; position: relative; z-index: 6;">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 88px 40px 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 48px;">
+      <div style="display: flex; flex-direction: column; gap: 22px;">
+        <div style="width: {{ c.logo.w }}px; height: {{ c.logo.h }}px; overflow: hidden; position: relative;">
+          <img src="{{ c.logo.src }}" alt="{{ c.name }}" style="position: absolute; width: {{ c.logo.imgW }}px; left: {{ c.logo.left }}px; top: {{ c.logo.top }}px; filter: {{ c.logo.footerFilter }}; mix-blend-mode: {{ c.logo.footerBlend }};">
+        </div>
+        <p style="font-size: 15px; line-height: 1.65; max-width: 280px;">{{ c.footerText }}</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; font-size: 15px;">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: {{ t.onDark }}; padding-bottom: 6px;">Mapa sajta</div>
+        <sc-for list="{{ c.nav }}" as="n" hint-placeholder-count="5"><a href="{{ n.href }}" style="text-decoration: none; transition: color .2s ease;" style-hover="color: {{ t.accent }};">{{ n.label }}</a></sc-for>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; font-size: 15px; line-height: 1.5;">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: {{ t.onDark }}; padding-bottom: 6px;">Kontakt</div>
+        <div>{{ c.contact.email }}</div>
+        <div>{{ c.contact.phone }}</div>
+        <sc-for list="{{ c.contact.addresses }}" as="ad" hint-placeholder-count="1"><div>{{ ad }}</div></sc-for>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; font-size: 15px;">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: {{ t.onDark }}; padding-bottom: 6px;">Pratite nas</div>
+        <sc-for list="{{ c.social }}" as="so" hint-placeholder-count="3"><a href="#top" style="text-decoration: none; transition: color .2s ease;" style-hover="color: {{ t.accent }};">{{ so }}</a></sc-for>
+      </div>
+    </div>
+    <div style="max-width: 1360px; margin: 0 auto; padding: 24px 40px 32px; border-top: 1px solid {{ t.onDarkLine }}; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 13px;">
+      <span>© 2026 {{ c.legalName }}. Sva prava zadržana.</span>
+      <span style="display: flex; gap: 24px;"><span>Politika privatnosti</span><span>Uslovi korišćenja</span></span>
+    </div>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <sc-if value="{{ lbOpen }}">
+    <div onClick="{{ lbClose }}" style="position: fixed; inset: 0; z-index: 100; background: rgba(8,10,12,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 72px 96px;">
+      <div onClick="{{ stop }}" style="position: relative; width: 100%; max-width: 1400px; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;">
+        <sc-if value="{{ lb.src }}"><img src="{{ lb.src }}" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;"></sc-if>
+        <sc-if value="{{ lb.ph }}"><div style="width: 100%; aspect-ratio: 16 / 10; max-height: 100%; border-radius: 4px; background: repeating-linear-gradient(135deg, #1b1f23 0 14px, #262b30 14px 28px); display: flex; align-items: center; justify-content: center;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9aa3ab;">{{ lb.label }}</span></div></sc-if>
+      </div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #c8ccd0;">{{ lbCount }}</div>
+      <button onClick="{{ lbPrev }}" aria-label="Prethodno" style="position: absolute; left: 24px; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: #FFFFFF; font-size: 22px; cursor: pointer; transition: all .25s ease;" style-hover="background: {{ t.accent }}; border-color: {{ t.accent }}; color: {{ t.onAccent }};">←</button>
+      <button onClick="{{ lbNext }}" aria-label="Sledeće" style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: #FFFFFF; font-size: 22px; cursor: pointer; transition: all .25s ease;" style-hover="background: {{ t.accent }}; border-color: {{ t.accent }}; color: {{ t.onAccent }};">→</button>
+      <button onClick="{{ lbClose }}" aria-label="Zatvori" style="position: absolute; right: 24px; top: 20px; width: 48px; height: 48px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: #FFFFFF; font-size: 20px; cursor: pointer;" style-hover="background: #FFFFFF; color: #000000;">✕</button>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;brand&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;jungic&quot;,&quot;heliocene&quot;,&quot;patria&quot;],&quot;default&quot;:&quot;jungic&quot;,&quot;tsType&quot;:&quot;'jungic'|'heliocene'|'patria'&quot;},&quot;textImageLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;alternate&quot;,&quot;image-right&quot;,&quot;image-left&quot;],&quot;default&quot;:&quot;alternate&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { faq: 0, lb: null, gi: 0, sent: false, scrolled: false, active: 'top', langOpen: false, lang: 'SR' };
+  trackRef = React.createRef();
+  rootRef = React.createRef();
+
+  initFx() {
+    const root = this.rootRef.current; if (!root) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!this.io) this.io = new IntersectionObserver((es) => es.forEach(e => {
+      if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'none'; this.io.unobserve(e.target); }
+    }), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    root.querySelectorAll('[data-reveal]').forEach(el => {
+      if (el.dataset.fx) return; el.dataset.fx = '1';
+      const sib = Array.from(el.parentNode.children).filter(x => x.hasAttribute('data-reveal'));
+      const i = Math.max(0, sib.indexOf(el)) % 4;
+      el.style.opacity = '0'; el.style.transform = 'translateY(28px)';
+      el.style.transition = `opacity .9s cubic-bezier(.2,.7,.2,1) ${i * 90}ms, transform .9s cubic-bezier(.2,.7,.2,1) ${i * 90}ms, box-shadow .3s ease, border-color .3s ease`;
+      this.io.observe(el);
+    });
+  }
+  loop = () => {
+    const root = this.rootRef.current;
+    if (root) {
+      const vh = window.innerHeight;
+      root.querySelectorAll('video').forEach(v => { if (!v.muted || v.volume) { v.muted = true; v.defaultMuted = true; v.volume = 0; v.setAttribute('muted', ''); } });
+      root.querySelectorAll('[data-fx]').forEach(el => {
+        if (el.style.opacity === '0' && el.getBoundingClientRect().top < vh * 0.92) { el.style.opacity = '1'; el.style.transform = 'none'; }
+      });
+      root.querySelectorAll('[data-rail]').forEach(r => {
+        const p = r.parentNode.getBoundingClientRect();
+        const prog = Math.min(1, Math.max(0, (vh * 0.75 - p.top) / (p.height + vh * 0.25)));
+        const target = prog * Math.max(0, p.height - 56);
+        r._y = r._y == null ? target : r._y + (target - r._y) * 0.09;
+        r.style.transform = `translateY(${r._y.toFixed(2)}px)`;
+      });
+      root.querySelectorAll('[data-parallax]').forEach(img => {
+        const b = img.parentNode.getBoundingClientRect();
+        const off = (b.top + b.height / 2 - vh / 2) * -0.07;
+        img._y = img._y == null ? off : img._y + (off - img._y) * 0.12;
+        img.style.transform = `translateY(${img._y.toFixed(2)}px) scale(1.14)`;
+      });
+      const rootTop = root.getBoundingClientRect().top;
+      root.querySelectorAll('[data-hero]').forEach(el => {
+        const y = Math.max(0, -rootTop) * 0.3;
+        el.style.transform = `translateY(${y.toFixed(1)}px) scale(1.06)`;
+      });
+      const scrolled = rootTop < -40;
+      let active = 'top';
+      ['o-nama', 'usluge', 'galerija', 'kontakt'].forEach(id => { const el = root.querySelector('#' + id); if (el && el.getBoundingClientRect().top < vh * 0.4) active = id; });
+      if (scrolled !== this.state.scrolled || active !== this.state.active) this.setState({ scrolled, active });
+    }
+    this.raf = requestAnimationFrame(this.loop);
+  };
+
+  componentDidMount() {
+    this.initFx(); this.raf = requestAnimationFrame(this.loop);
+    this.onResize = () => { const narrow = window.innerWidth < 1140; if (narrow !== this.state.narrow) this.setState({ narrow, menuOpen: false }); };
+    this.onResize(); window.addEventListener('resize', this.onResize);
+    this.onDoc = () => { if (this.state.langOpen) this.setState({ langOpen: false }); };
+    document.addEventListener('click', this.onDoc);
+    this.onKey = (e) => {
+      if (this.state.lb === null) return;
+      if (e.key === 'Escape') this.setState({ lb: null });
+      if (e.key === 'ArrowRight') this.step(1);
+      if (e.key === 'ArrowLeft') this.step(-1);
+    };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this.onKey); document.removeEventListener('click', this.onDoc); window.removeEventListener('resize', this.onResize); cancelAnimationFrame(this.raf); if (this.io) this.io.disconnect(); }
+  componentDidUpdate(p) { if (p.brand !== this.props.brand) this.setState({ faq: 0, lb: null, gi: 0, sent: false }); this.initFx(); }
+
+  step(d) {
+    const n = this.content().gallery.items.length;
+    this.setState(s => ({ lb: (s.lb + d + n) % n }));
+  }
+  scrollTrack(d) {
+    const el = this.trackRef.current; if (!el) return;
+    const card = el.children[0]; const w = card ? card.getBoundingClientRect().width + 20 : 600;
+    el.scrollBy({ left: d * w, behavior: 'smooth' });
+  }
+
+  themes() {
+    return {
+      heliocene: { heading: "'Outfit', sans-serif", body: "'Outfit', sans-serif", headingWeight: 600, headingTracking: '-0.5px',
+        bg: '#FFFFFF', soft: '#F7F3E8', softAlt: '#EEE7D4', ink: '#17303D', muted: '#4F6570', line: '#DCE3E6', guide: 'rgba(38,74,94,0.07)',
+        dark: '#264A5E', darker: '#1A3747', onDark: '#FFFFFF', onDarkMuted: '#B9CCD6', onDarkLine: 'rgba(255,255,255,0.18)',
+        headerBg: '#264A5E', headerFg: '#FFFFFF', headerLine: 'rgba(255,255,255,0.1)', heroShade: 'rgba(18,42,55,0.85)',
+        accent: '#FFC928', onAccent: '#264A5E', accentOnLight: '#2FA4D7', pretitle: '#1F7FAD',
+        primary: '#264A5E', onPrimary: '#FFFFFF', primaryHover: '#122A37', secondary: '#FFC928', onSecondary: '#264A5E', secondaryHover: '#FFB800', tertiary: '#2FA4D7', onTertiary: '#122A37' },
+      jungic: { heading: "'Archivo', sans-serif", body: "'Archivo', sans-serif", headingWeight: 700, headingTracking: '-0.8px',
+        bg: '#FFFFFF', soft: '#F3F5EE', softAlt: '#E6EADC', ink: '#0B0B0B', muted: '#4A4E45', line: '#DFE3D6', guide: 'rgba(11,11,11,0.06)',
+        dark: '#0B0B0B', darker: '#000000', onDark: '#FFFFFF', onDarkMuted: '#A9AEA2', onDarkLine: 'rgba(255,255,255,0.16)',
+        headerBg: '#000000', headerFg: '#FFFFFF', headerLine: 'rgba(255,255,255,0.08)', heroShade: 'rgba(0,0,0,0.82)',
+        accent: '#C6F432', onAccent: '#0B0B0B', accentOnLight: '#8FB81A', pretitle: '#4F6A00',
+        primary: '#0B0B0B', onPrimary: '#C6F432', primaryHover: '#2A2D24', secondary: '#FFD000', onSecondary: '#0B0B0B', secondaryHover: '#F0BE00', tertiary: '#C6F432', onTertiary: '#0B0B0B' },
+      patria: { heading: "'Cormorant Garamond', serif", body: "'Jost', sans-serif", headingWeight: 500, headingTracking: '0px',
+        bg: '#FFFFFF', soft: '#F6F3EE', softAlt: '#ECE6DC', ink: '#1E1E1E', muted: '#5A5650', line: '#E4DFD6', guide: 'rgba(30,30,30,0.06)',
+        dark: '#1E1E1E', darker: '#141414', onDark: '#F6F3EE', onDarkMuted: '#B0ABA3', onDarkLine: 'rgba(255,255,255,0.14)',
+        headerBg: '#FFFFFF', headerFg: '#1E1E1E', headerLine: '#E9E5DE', heroShade: 'rgba(20,20,20,0.8)',
+        accent: '#C49A66', onAccent: '#1E1E1E', accentOnLight: '#A8804F', pretitle: '#8A6538',
+        primary: '#1E1E1E', onPrimary: '#F6F3EE', primaryHover: '#3A3835', secondary: '#A8804F', onSecondary: '#FFFFFF', secondaryHover: '#8E6A3F', tertiary: '#D9CDBA', onTertiary: '#1E1E1E' }
+    };
+  }
+
+  buttons(t) {
+    const base = (bg, fg, border) => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '48px', padding: '0 26px', borderRadius: '6px', border: `2px solid ${border}`, background: bg, color: fg, fontFamily: t.body, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2px', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer', transition: 'all .25s ease' });
+    const lift = { transform: 'translateY(-2px)', boxShadow: '0 12px 22px -10px rgba(0,0,0,.45)' };
+    const solid = (bg, fg, hBg, hFg) => ({ style: base(bg, fg, bg), hover: { ...lift, background: hBg, borderColor: hBg, color: hFg || fg } });
+    const outline = (c, hFg) => ({ style: base('transparent', c, c), hover: { ...lift, background: c, color: hFg } });
+    return {
+      primary: solid(t.primary, t.onPrimary, t.primaryHover),
+      secondary: solid(t.secondary, t.onSecondary, t.secondaryHover),
+      outline: outline(t.primary, t.onPrimary),
+      darkPrimary: solid(t.accent, t.onAccent, t.tertiary, t.onTertiary),
+      darkOutline: outline('#FFFFFF', t.dark),
+      headerCta: (() => { const b = t.headerBg === '#FFFFFF' ? solid(t.primary, t.onPrimary, t.secondary, t.onSecondary) : solid(t.accent, t.onAccent, t.tertiary, t.onTertiary); b.style = { ...b.style, height: '44px', padding: '0 22px', fontSize: '14px' }; b.hover = { ...b.hover, transform: 'none', boxShadow: 'none' }; return b; })()
+    };
+  }
+
+  content() {
+    const J = 'https://jungic.rs/media/';
+    const jimg = { a: J + 'dxvnjnlv/iap_2905.jpg?width=1400&quality=75', b: J + 'kxyf2fot/iap_3020.jpg?width=1400&quality=75', c: J + 'guwmbnib/iap_2992.jpg?width=1400&quality=75', d: J + '4nzj2dab/dji_0843.jpg?width=1400&quality=75', e: J + 'rs5mzsoc/dji_0827.jpg?width=1400&quality=75', f: J + '515nftyd/dji_0784.jpg?width=1400&quality=75' };
+    const ph = (label) => ({ src: '', ph: true, label });
+    const P = (id) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1800`;
+    const im = (src) => ({ src, ph: false, label: '' });
+    return {
+      jungic: {
+        name: 'Jungić Recycling', legalName: 'Jungić Recycling d.o.o.',
+        logo: { src: 'uploads/jungic.png', w: 152, h: 32, imgW: 169, left: -9, top: -9, footerFilter: 'none', footerBlend: 'screen' },
+        nav: [{ label: 'Početna', href: '#top' }, { label: 'O nama', href: '#o-nama' }, { label: 'Naše usluge', href: '#usluge' }, { label: 'Galerija', href: '#galerija' }, { label: 'Kontakt', href: '#kontakt' }],
+        headerCta: 'Zatražite ponudu',
+        hero: { video: J + 'eltb3q2o/jungic_aa2.mp4', ph: false, pretitle: 'Reciklaža i otkup metalnog otpada', title: 'Dobrodošli u Jungić Recycling', text: 'Vaš pouzdan partner za reciklažu i otkup metalnog otpada. Naša misija je očuvanje prirodnih resursa i stvaranje održive budućnosti.', cta1: 'Saznaj više', cta2: 'Kontakt' },
+        about: { pretitle: 'O nama', title: 'Jungić Recycling – Lider u industriji reciklaže.', text: ['Sa tradicijom dužom od 20 godina, Jungić Recycling je sinonim za kvalitet, inovacije i ekološku odgovornost.', 'Naša misija je stvaranje rešenja koja menjaju način na koji se upravlja otpadom.'], cta: 'Saznaj više', image: im(jimg.a) },
+        cards: { pretitle: 'Naše usluge', title: 'Naša ponuda uključuje', cta: 'Sve usluge', more: 'Pročitajte više', items: [
+          { ...im(jimg.c), tag: 'Usluga', meta: '01', title: 'Reciklaža metalnog otpada', text: 'Prikupljanje i pažljivo sortiranje metalnog otpada, uključujući gvožđe, čelik, aluminijum, bakar i mesing, uz najsavremeniju tehnologiju obrade.' },
+          { ...im(jimg.e), tag: 'Usluga', meta: '02', title: 'Otkup metalnog otpada', text: 'Brz, jednostavan i transparentan proces. Precizna procena vrednosti na licu mesta i isplata odmah nakon dogovora.' },
+          { ...im(jimg.a), tag: 'Usluga', meta: '03', title: 'Specijalizovana oprema', text: 'Najmodernije tehnologije za preciznu obradu svih vrsta metala, od crnih do obojenih, uz minimalan uticaj na životnu sredinu.' },
+          { ...im(jimg.f), tag: 'Usluga', meta: '04', title: 'Transport', text: 'Siguran i pouzdan prevoz metalnog otpada specijalizovanim vozilima, od vaše lokacije do našeg postrojenja.' },
+          { ...im(jimg.d), tag: 'Usluga', meta: '05', title: 'Kontejneri različitih zapremina', text: 'Kontejneri od 1, 5, 7 i 10 m³ i Abroll kontejneri od 20, 32 i 38 m³ za industrijske i infrastrukturne projekte.' },
+          { ...im(jimg.b), tag: 'Sertifikati', meta: '06', title: 'Kvalitet koji je potvrđen', text: 'ISO 9001, ISO 14001, ISO 45001, BIR i dozvole za sakupljanje, transport, skladištenje i tretman otpada.' }
+        ] },
+        second: { pretitle: 'Sertifikati', title: 'Kvalitet koji je potvrđen.', text: ['Naša posvećenost međunarodnim standardima kvaliteta i zaštite životne sredine potvrđena je brojnim sertifikatima.', 'Jungić Recycling je vaš partner od poverenja.'], cta: 'Preuzmite sertifikate', image: im(jimg.b) },
+        gallery: { pretitle: 'Galerija', title: 'Zavirite u naš svet.', text: 'Pogledajte slike koje prikazuju naše procese reciklaže, tim i specijalizovanu opremu u akciji.', items: [im(jimg.d), im(jimg.b), im(jimg.c), im(jimg.a), im(jimg.e), im(jimg.f)] },
+        faqIntro: 'Reciklaža i transportne usluge. Ako imate dodatnih pitanja, slobodno nas kontaktirajte.',
+        faq: [
+          ['Koje vrste materijala Jungić Recycling prihvata za reciklažu?', 'Prihvatamo širok spektar metalnih materijala za reciklažu, uključujući čelik, aluminijum, bakar, mesing, nerđajući čelik i druge. Ako imate određeni materijal, obratite se našem timu da proverite da li ga prihvatamo.'],
+          ['Kako funkcioniše proces reciklaže?', 'Nakon prikupljanja, metalni otpad se sortira prema vrsti, čisti od nečistoća, a zatim obrađuje da bi zadovoljio visoke standarde kvaliteta. Reciklirani metali se potom koriste kao sirovine u različitim industrijama.'],
+          ['Da li nudite transportne usluge za opasne materijale?', 'Da, posedujemo specijalizovanu opremu i sposobnosti za bezbedan transport opasnih materijala, u skladu sa svim relevantnim propisima.'],
+          ['Kako da zakažem prikupljanje metalnog otpada?', 'Obratite se našem timu putem telefona ili e-maila. Obavestite nas o datumu, vremenu i lokaciji koja vam odgovara, i mi ćemo organizovati prikupljanje.'],
+          ['Kakva je cenovna politika?', 'Cene zavise od vrste i količine materijala, udaljenosti transporta i posebnih zahteva. Kontaktirajte nas za prilagođenu ponudu.'],
+          ['Da li Jungić Recycling poseduje sertifikate?', 'Da, poštujemo industrijske standarde i posedujemo relevantne sertifikate koji ističu našu posvećenost odgovornim praksama reciklaže i zaštiti životne sredine.']
+        ],
+        topics: ['Otkup metalnog otpada', 'Reciklaža', 'Transport', 'Kontejneri', 'Ostalo'],
+        contact: { email: 'info@jungic.rs', phone: '(+381) 66 220 111', addresses: ['Generala Rašića 3, 11010 Beograd-Voždovac', 'Industrijska 7, 34000 Kragujevac'], map: 'Generala Rašića 3, Beograd' },
+        footerText: 'Cirkularna ekonomija: revitalizuj, recikliraj, obnovi.', social: ['Instagram', 'Facebook', 'YouTube']
+      },
+      heliocene: {
+        name: 'Heliocene', legalName: 'Heliocene d.o.o.',
+        logo: { src: 'uploads/Heliocene.jpg', w: 176, h: 24, imgW: 375, left: -100, top: -85, footerFilter: 'none', footerBlend: 'normal' },
+        nav: [{ label: 'Početna', href: '#top' }, { label: 'O nama', href: '#o-nama' }, { label: 'Usluge', href: '#usluge' }, { label: 'Galerija', href: '#galerija' }, { label: 'Kontakt', href: '#kontakt' }],
+        headerCta: 'Zakažite konsultacije',
+        hero: { video: '', image: P(8477444), ph: false, label: '', pretitle: 'Računovodstvo · Revizija · Poresko savetovanje', title: 'Pouzdani brojevi. Mirno poslovanje.', text: 'Heliocene pruža računovodstvene, knjigovodstvene i revizorske usluge i poresko savetovanje. Brinemo o finansijama vaše firme kako biste se vi posvetili rastu.', cta1: 'Naše usluge', cta2: 'Kontakt' },
+        about: { pretitle: 'O nama', title: 'Finansijski partner za mala i srednja preduzeća.', text: ['Heliocene d.o.o. je privatno preduzeće iz Beograda, sa sedištem na Voždovcu, osnovano početkom 2023. godine. Kompaniju vodi Dušica Jungić, finansijska direktorka porodičnog poslovnog sistema Jungić.', 'Radimo sa preduzetnicima i privrednim društvima kojima je potreban tačan, blagovremen i razumljiv pregled finansija.'], cta: 'Upoznajte nas', image: im(P(6694492)) },
+        cards: { pretitle: 'Usluge', title: 'Sve što je potrebno vašim finansijama', cta: 'Sve usluge', more: 'Saznajte više', items: [
+          { ...im(P(259139)), tag: 'Usluga', meta: '01', title: 'Knjigovodstvo', text: 'Vođenje poslovnih knjiga, evidencija ulaznih i izlaznih faktura i usklađivanje sa bankom, redovno i bez kašnjenja.' },
+          { ...im(P(6476254)), tag: 'Usluga', meta: '02', title: 'Računovodstvo i finansijski izveštaji', text: 'Periodični i godišnji finansijski izveštaji, završni račun i priprema dokumentacije za APR.' },
+          { ...im(P(5466238)), tag: 'Usluga', meta: '03', title: 'Revizorski poslovi', text: 'Interna provera poslovanja i priprema za eksternu reviziju, uz jasne preporuke za unapređenje.' },
+          { ...im(P(4342498)), tag: 'Usluga', meta: '04', title: 'Poresko savetovanje', text: 'Planiranje poreskih obaveza, PDV prijave i zastupanje u komunikaciji sa Poreskom upravom.' },
+          { ...im(P(12526862)), tag: 'Usluga', meta: '05', title: 'Obračun zarada', text: 'Mesečni obračun plata, doprinosa i poreza, prijave zaposlenih i izdavanje potvrda.' },
+          { ...im(P(8134002)), tag: 'Usluga', meta: '06', title: 'Finansijsko savetovanje', text: 'Budžetiranje, analiza troškova i praćenje novčanih tokova za sigurnije poslovne odluke.' }
+        ] },
+        second: { pretitle: 'Kako radimo', title: 'Jasan proces, bez iznenađenja.', text: ['Svaka saradnja počinje razgovorom o vašem poslovanju. Zatim definišemo obim usluga, rokove i način razmene dokumentacije.', 'Dobijate jednu kontakt osobu, redovne izveštaje i podsetnike za sve zakonske rokove.'], cta: 'Zakažite konsultacije', image: im(P(4342498)) },
+        gallery: { pretitle: 'Galerija', title: 'Naš prostor i tim.', text: 'Kancelarija na Voždovcu i ljudi koji brinu o vašim finansijama.', items: [im(P(12526862)), im(P(8134002)), im(P(5466238)), im(P(5506057)), im(P(8297846))] },
+        faqIntro: 'Odgovori na pitanja koja nam klijenti najčešće postavljaju pre početka saradnje.',
+        faq: [
+          ['Sa kojim klijentima radite?', 'Radimo sa preduzetnicima, mikro i malim preduzećima iz različitih delatnosti, na teritoriji cele Srbije.'],
+          ['Kako se razmenjuje dokumentacija?', 'Dokumentaciju možete dostavljati elektronski ili lično u našoj kancelariji. Dogovaramo način koji vam najviše odgovara.'],
+          ['Kako se formira cena usluga?', 'Cena zavisi od obima dokumentacije, broja zaposlenih i vrste usluga. Nakon prvog razgovora šaljemo ponudu sa fiksnom mesečnom cenom.'],
+          ['Da li možete preuzeti knjigovodstvo usred godine?', 'Da. Preuzimamo postojeću dokumentaciju, proveravamo stanje i nastavljamo vođenje knjiga bez prekida.'],
+          ['Da li nudite pomoć pri osnivanju firme?', 'Da, savetujemo vas pri izboru pravne forme i poreskog režima i pripremamo dokumentaciju za registraciju.']
+        ],
+        topics: ['Knjigovodstvo', 'Poresko savetovanje', 'Revizija', 'Obračun zarada', 'Ostalo'],
+        contact: { email: 'office@heliocene.rs', phone: '(+381) 11 000 0000', addresses: ['Generala Rašića 3, 11010 Beograd-Voždovac'], map: 'Generala Rašića 3, Beograd' },
+        footerText: 'Računovodstvene, knjigovodstvene i revizorske usluge i poresko savetovanje.', social: ['LinkedIn', 'Instagram', 'Facebook']
+      },
+      patria: {
+        name: 'Patria Properties', legalName: 'Patria Properties d.o.o.',
+        logo: { src: 'uploads/patria.png', w: 136, h: 58, imgW: 197, left: -31, top: -70, footerFilter: 'invert(1)', footerBlend: 'screen' },
+        nav: [{ label: 'Početna', href: '#top' }, { label: 'O nama', href: '#o-nama' }, { label: 'Nekretnine', href: '#usluge' }, { label: 'Galerija', href: '#galerija' }, { label: 'Kontakt', href: '#kontakt' }],
+        headerCta: 'Zakažite razgledanje',
+        hero: { video: '', image: P(18356512), ph: false, label: '', pretitle: 'Nekretnine · Kragujevac', title: 'Prostori koji rade za vas.', text: 'Patria Properties izdaje i upravlja poslovnim, magacinskim i stambenim nekretninama u Kragujevcu, od prvog razgledanja do dugoročnog zakupa.', cta1: 'Pogledajte ponudu', cta2: 'Kontakt' },
+        about: { pretitle: 'O nama', title: 'Deo porodičnog poslovnog sistema Jungić.', text: ['Patria Properties d.o.o. osnovana je krajem 2021. godine, sa sedištem u Kragujevcu. Vlasnik i direktor kompanije je Stefan Jungić, operativni direktor brenda Jungić reciklaža.', 'Bavimo se izdavanjem sopstvenih i iznajmljenih nekretnina i upravljanjem njima, sa fokusom na dugoročne odnose sa zakupcima.'], cta: 'Saznajte više', image: im(P(8933650)) },
+        cards: { pretitle: 'Ponuda', title: 'Nekretnine u ponudi', cta: 'Sve nekretnine', more: 'Pogledajte detalje', items: [
+          { ...im(P(8103238)), tag: 'Dostupno', meta: 'Poslovni prostor · 120 m²', title: 'Poslovni prostor, centar', text: 'Prizemlje sa izlogom prema ulici, pogodno za prodavnicu ili kancelariju. Parking u blizini.' },
+          { ...im(P(3831826)), tag: 'Dostupno', meta: 'Magacin · 850 m²', title: 'Magacinski prostor, Industrijska zona', text: 'Visina 7 m, rampa za utovar i pristup za kamione. Kancelarijski deo i sanitarni čvor.' },
+          { ...im(P(5483233)), tag: 'Izdato', meta: 'Kancelarije · 240 m²', title: 'Kancelarijski sprat', text: 'Otvoreni prostor i četiri zasebne kancelarije, sala za sastanke i čajna kuhinja.' },
+          { ...im(P(6588599)), tag: 'Dostupno', meta: 'Stan · 68 m²', title: 'Dvosoban stan, Aerodrom', text: 'Namešten stan na trećem spratu, sa terasom i garažnim mestom. Za dugoročni zakup.' },
+          { ...im(P(37293743)), tag: 'Uskoro', meta: 'Lokal · 45 m²', title: 'Ugaoni lokal', text: 'Lokal u novoj stambenoj zgradi, dva ulaza i velika staklena površina.' },
+          { ...im(P(11667731)), tag: 'Dostupno', meta: 'Hala · 1.600 m²', title: 'Proizvodna hala, Industrijska zona', text: 'Hala sa kranskom stazom, energetskim priključcima i manipulativnim platoom za kamione.' }
+        ] },
+        second: { pretitle: 'Upravljanje nekretninama', title: 'Brinemo o prostoru, vi o poslu.', text: ['Za zakupce obezbeđujemo održavanje objekta, tehnički servis i brzu reakciju na svaki zahtev.', 'Vlasnicima nudimo kompletno upravljanje: pronalazak zakupaca, ugovore, naplatu i redovne izveštaje.'], cta: 'Zakažite razgledanje', image: im(P(6933852)) },
+        gallery: { pretitle: 'Galerija', title: 'Naši objekti.', text: 'Izbor fotografija poslovnih, magacinskih i stambenih prostora iz naše ponude.', items: [im(P(18356512)), im(P(6934189)), im(P(3831826)), im(P(6527029)), im(P(8103238)), im(P(7060814))] },
+        faqIntro: 'Sve o zakupu, razgledanju i upravljanju nekretninama.',
+        faq: [
+          ['Kako mogu da zakažem razgledanje?', 'Popunite formu ili nas pozovite. Razgledanje organizujemo u roku od 48 sati, u terminu koji vam odgovara.'],
+          ['Koliko traje ugovor o zakupu?', 'Najčešće nudimo ugovore na godinu dana i duže, uz mogućnost produženja. Kraći zakup je moguć po dogovoru.'],
+          ['Šta je uključeno u cenu zakupa?', 'Cena uključuje zakup prostora i održavanje zajedničkih delova. Komunalije i režijski troškovi se plaćaju prema potrošnji.'],
+          ['Da li je moguće prilagoditi prostor?', 'Da, za dugoročne zakupce dogovaramo prilagođavanje prostora potrebama delatnosti.'],
+          ['Da li upravljate i tuđim nekretninama?', 'Da, vlasnicima nudimo kompletno upravljanje, od pronalaska zakupca do naplate i održavanja.']
+        ],
+        topics: ['Zakup poslovnog prostora', 'Zakup stana', 'Upravljanje nekretninom', 'Ostalo'],
+        contact: { email: 'office@patriaproperties.rs', phone: '(+381) 34 000 000', addresses: ['Industrijska 7, 34000 Kragujevac'], map: 'Industrijska 7, Kragujevac' },
+        footerText: 'Izdavanje i upravljanje nekretninama u Kragujevcu.', social: ['Instagram', 'Facebook', 'LinkedIn']
+      }
+    }[this.props.brand || 'jungic'] || null;
+  }
+
+  renderVals() {
+    const brand = this.props.brand || 'jungic';
+    const t = this.themes()[brand] || this.themes().jungic;
+    const c = this.content();
+    const layout = this.props.textImageLayout || 'alternate';
+    const d1 = layout === 'image-left' ? 'row-reverse' : 'row';
+    const d2 = layout === 'image-right' ? 'row' : layout === 'image-left' ? 'row-reverse' : 'row-reverse';
+    const items = c.gallery.items;
+    const n = items.length;
+    const lb = this.state.lb;
+    const hMuted = { heliocene: '#B9CCD6', jungic: '#A9AEA2', patria: '#6B665F' }[brand];
+    t.headerMuted = hMuted; t.headerAccent = brand === 'patria' ? t.accentOnLight : t.accent;
+    const langs = [['SR', 'Srpski', 'rs'], ['EN', 'English', 'gb'], ['DE', 'Deutsch', 'de']];
+    const flag = (cc) => `https://flagcdn.com/w80/${cc}.png`;
+    const curLang = langs.find(l => l[0] === this.state.lang);
+    return {
+      t, c, btn: this.buttons(t), rootRef: this.rootRef,
+      hdr: { h: '76px', shadow: this.state.scrolled ? '0 10px 30px -18px rgba(0,0,0,0.35)' : 'none' },
+      navItems: c.nav.map(n => { const on = n.href === '#' + this.state.active; return { ...n, color: on ? t.headerFg : hMuted, deco: on ? t.headerFg : 'transparent' }; }),
+      navDisplay: this.state.narrow ? 'none' : 'flex', menuBtnDisplay: this.state.narrow ? 'flex' : 'none',
+      menuOpen: !!(this.state.narrow && this.state.menuOpen), menuIcon: this.state.menuOpen ? '✕' : '☰',
+      toggleMenu: (e) => { e.stopPropagation(); this.setState(s => ({ menuOpen: !s.menuOpen })); },
+      closeMenu: () => this.setState({ menuOpen: false }),
+      lang: { code: this.state.lang, flag: flag(curLang[2]) }, langOpen: this.state.langOpen, langRot: this.state.langOpen ? '-135deg' : '45deg', langChevY: this.state.langOpen ? '2px' : '-2px',
+      toggleLang: (e) => { e.stopPropagation(); this.setState(s => ({ langOpen: !s.langOpen })); },
+      langs: langs.map(([code, name, cc]) => ({ code, name, flag: flag(cc), weight: code === this.state.lang ? 600 : 400, bg: code === this.state.lang ? '#F2F1EE' : 'transparent', pick: (e) => { e.stopPropagation(); this.setState({ lang: code, langOpen: false }); } })),
+      ti1: { dir: d1 }, ti2: { dir: d2 },
+      trackRef: this.trackRef,
+      onTrackScroll: (e) => { const el = e.currentTarget; const w = el.children[0] ? el.children[0].getBoundingClientRect().width + 20 : 1; const gi = Math.round(el.scrollLeft / w); if (gi !== this.state.gi) this.setState({ gi }); },
+      galleryCount: String(Math.min(this.state.gi + 1, n)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0'),
+      galPrev: () => this.scrollTrack(-1), galNext: () => this.scrollTrack(1),
+      gallery: items.map((g, i) => ({ ...g, open: () => this.setState({ lb: i }) })),
+      lbOpen: lb !== null, lb: lb !== null ? items[lb] : {},
+      lbCount: lb !== null ? (lb + 1) + ' / ' + n : '',
+      lbPrev: (e) => { e.stopPropagation(); this.step(-1); }, lbNext: (e) => { e.stopPropagation(); this.step(1); },
+      lbClose: () => this.setState({ lb: null }), stop: (e) => e.stopPropagation(),
+      faq: c.faq.map(([q, a], i) => { const open = this.state.faq === i; return { q, a, open, rows: open ? '1fr' : '0fr', op: open ? 1 : 0, ty: open ? '0px' : '-8px', rot: open ? '-135deg' : '45deg', chevY: open ? '2px' : '-2px', iconBg: open ? t.primary : 'transparent', iconFg: open ? t.onPrimary : t.ink, iconBorder: open ? t.primary : t.line, toggle: () => this.setState({ faq: open ? -1 : i }) }; }),
+      contactText: { jungic: 'Za otkup, reciklažu, transport ili zakup kontejnera, pišite nam ili pozovite. Naš tim će vam pripremiti ponudu prilagođenu vrsti i količini materijala.', heliocene: 'Zakažite besplatne uvodne konsultacije. Razgovaraćemo o vašem poslovanju i predložiti obim usluga koji vam odgovara.', patria: 'Zanima vas neki od naših prostora ili upravljanje vašom nekretninom? Javite nam se i dogovorićemo razgledanje.' }[brand],
+      mapSrc: 'https://maps.google.com/maps?q=' + encodeURIComponent(c.contact.map) + '&z=15&output=embed',
+      sent: this.state.sent, onSubmit: (e) => { e.preventDefault(); this.setState({ sent: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
